@@ -36,7 +36,6 @@ func (u *UserService) WrappedSignUpHandler(todos *ToDo) func(w http.ResponseWrit
       return
     }
 
-    userCounter++
     passwordDigest := md5.New().Sum([]byte(params.Password))
     newUser := User{
       Email: params.Email,
@@ -44,13 +43,13 @@ func (u *UserService) WrappedSignUpHandler(todos *ToDo) func(w http.ResponseWrit
       id: int(time.Now().Unix()),
     }
 
+    userCounter++
     if err := u.repository.Add(params.Email, newUser); err != nil {
       userCounter--
       handleError(err, w)
       return
     }
 
-    // TODO: 
     todos.todos[newUser.id] = &UserToDo{lists: make(map[int]*ToDoList)}
 
     w.WriteHeader(http.StatusCreated)

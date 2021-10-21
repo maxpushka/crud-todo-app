@@ -49,27 +49,17 @@ type Task struct {
 //}
 
 type CreateTaskParameters struct {
-  list_id int // Should be taken from query
-  task_name string `json:"task_name"`
-  task_description string `json:"task_description"`
+  Name string `json:"name"`
+  Description string `json:"description"`
 }
 
-var globalTodos ToDo
+type UpdateTaskParameters struct {
+  Name string `json:"name"` 
+  Description string `json:"description"`
+  IsCompleted bool `json:"isCompleted"`
+}
+
 var userCounter int
 var listsCounter int
 var tasksCounter int
-
-func createNewTask(user User, params CreateTaskParameters) {
-  userTodos := globalTodos.todos[user.id]
-  list := userTodos.lists[params.list_id]
-  tasksCounter++
-  taskId := tasksCounter
-  task := &Task{
-    Id: taskId,
-    Name: params.task_name,
-    Description: params.task_description,
-  }
-
-  list.tasks[taskId] = task
-}
 

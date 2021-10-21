@@ -32,15 +32,15 @@ func main() {
   r.HandleFunc("/user/signup", logRequest(userService.WrappedSignUpHandler(todos))).Methods(http.MethodPost)  // creates user in-memory
   r.HandleFunc("/user/signin", logRequest(wrapJwt(jwtService, userService.SignInHandler))).Methods(http.MethodPost)  // returns JWT access token
 
-  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, CreateToDoList))).Methods(http.MethodPost)  // created a new todo list
-  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, GetToDoLists))).Methods(http.MethodGet)  // returns all the lists for the given user
-  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, UpdateToDoList))).Methods(http.MethodPut)  // updates todo list
-  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, DeleteToDoList))).Methods(http.MethodDelete)  // deletes todo list
+  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, CreateToDoListHandler))).Methods(http.MethodPost)  // created a new todo list
+  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, GetToDoListsHandler))).Methods(http.MethodGet)  // returns all the lists for the given user
+  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, UpdateToDoListHandler))).Methods(http.MethodPut)  // updates todo list
+  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, DeleteToDoListHandler))).Methods(http.MethodDelete)  // deletes todo list
 
-  r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(mockHandler)).Methods(http.MethodGet)  // returns all the tasks for the given user in the specified list
-  r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(mockHandler)).Methods(http.MethodPost)  // creates a task in the specified list
-  r.HandleFunc("/todo/lists/{list_id}/tasks/{task_id}", logRequest(mockHandler)).Methods(http.MethodPut)  // updates a task in the specified list
-  r.HandleFunc("/todo/lists/{list_id}/tasks/{task_id}", logRequest(mockHandler)).Methods(http.MethodDelete)  // deletes a task in the specified list
+  r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(jwtService.jwtAuth(users, todos, GetTasksHandler))).Methods(http.MethodGet)  // returns all the tasks for the given user in the specified list
+  r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(jwtService.jwtAuth(users, todos, CreateTaskHandler))).Methods(http.MethodPost)  // creates a task in the specified list
+  r.HandleFunc("/todo/lists/{list_id}/tasks/{task_id}", logRequest(jwtService.jwtAuth(users, todos, UpdateTaskHandler))).Methods(http.MethodPut)  // updates a task in the specified list
+  r.HandleFunc("/todo/lists/{list_id}/tasks/{task_id}", logRequest(jwtService.jwtAuth(users, todos, DeleteTaskHandler))).Methods(http.MethodDelete)  // deletes a task in the specified list
   
   srv := http.Server{
     Addr: ":8080",

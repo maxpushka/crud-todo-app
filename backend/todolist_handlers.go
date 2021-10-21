@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetToDoLists(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func GetToDoListsHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
   w.Header().Set("Content-Type", "application/json")
   w.WriteHeader(http.StatusOK)
   json.NewEncoder(w).Encode(todolists.lists)
@@ -20,7 +20,7 @@ type ToDoListParams struct {
   Name string `json:"name"`
 }
 
-func CreateToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func CreateToDoListHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
   params := &ToDoListParams{}
   err := json.NewDecoder(r.Body).Decode(params) 
   if err != nil {
@@ -36,13 +36,13 @@ func CreateToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *U
     tasks: make(map[int]*Task),
   }
 
-  listsCounter++
   todolists.lists[id] = newToDoList
+  listsCounter++
   w.WriteHeader(http.StatusOK)
   w.Write([]byte(strconv.Itoa(id)))
 }
 
-func UpdateToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func UpdateToDoListHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
   params := &ToDoListParams{}
   err := json.NewDecoder(r.Body).Decode(params) 
   if err != nil {
@@ -57,10 +57,9 @@ func UpdateToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *U
     return
   }
   
-  
   list, ok := todolists.lists[listId]
   if !ok {
-    handleError(errors.New("the requested list does not exits"), w)
+    handleError(errors.New("requested list does not exits"), w)
     return
   }
 
@@ -69,7 +68,7 @@ func UpdateToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *U
   w.Write([]byte("updated"))
 }
 
-func DeleteToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func DeleteToDoListHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
   vars := mux.Vars(r)
   listId, err := strconv.Atoi(vars["list_id"])
   if err != nil {
@@ -79,11 +78,12 @@ func DeleteToDoList(w http.ResponseWriter, r *http.Request, u User, todolists *U
   
   _, ok := todolists.lists[listId]
   if !ok {
-    handleError(errors.New("the requested list does not exits"), w)
+    handleError(errors.New("requested list does not exits"), w)
     return
   }
 
   delete(todolists.lists, listId)
+  listsCounter--
   w.WriteHeader(http.StatusOK)
   w.Write([]byte("deleted"))
 }
