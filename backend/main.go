@@ -12,13 +12,16 @@ import (
 )
 
 func mockHandler(w http.ResponseWriter, r *http.Request) {
-  log.Println("handled!")
+  log.Println("mock handler")
+  w.WriteHeader(http.StatusOK)
+  w.Write([]byte("mock handler"))
 }
 
 func main() {
   r := mux.NewRouter()
 
   users := NewInMemoryUserStorage()
+  todos := &ToDo{todos: make(map[int]*UserToDo)}
   userService := UserService{repository: users}
   jwtService, err := NewJWTService("jwt_key", "jwt_key.pub")
   if err != nil {
@@ -26,13 +29,13 @@ func main() {
     return
   }
 
-  r.HandleFunc("/user/signup", logRequest(userService.SignUpHandler)).Methods(http.MethodPost)  // creates user in-memory
+  r.HandleFunc("/user/signup", logRequest(userService.WrappedSignUpHandler(todos))).Methods(http.MethodPost)  // creates user in-memory
   r.HandleFunc("/user/signin", logRequest(wrapJwt(jwtService, userService.SignInHandler))).Methods(http.MethodPost)  // returns JWT access token
 
-  r.HandleFunc("/todo/lists", logRequest(mockHandler)).Methods(http.MethodPost)  // created a new todo list
-  r.HandleFunc("/todo/lists", logRequest(mockHandler)).Methods(http.MethodGet)  // returns all the lists for the given user
-  r.HandleFunc("/todo/lists/{list_id}", logRequest(mockHandler)).Methods(http.MethodPut)  // updates todo list
-  r.HandleFunc("/todo/lists/{list_id}", logRequest(mockHandler)).Methods(http.MethodDelete)  // deletes todo list
+  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, CreateToDoList))).Methods(http.MethodPost)  // created a new todo list
+  r.HandleFunc("/todo/lists", logRequest(jwtService.jwtAuth(users, todos, GetToDoLists))).Methods(http.MethodGet)  // returns all the lists for the given user
+  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, UpdateToDoList))).Methods(http.MethodPut)  // updates todo list
+  r.HandleFunc("/todo/lists/{list_id}", logRequest(jwtService.jwtAuth(users, todos, DeleteToDoList))).Methods(http.MethodDelete)  // deletes todo list
 
   r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(mockHandler)).Methods(http.MethodGet)  // returns all the tasks for the given user in the specified list
   r.HandleFunc("/todo/lists/{list_id}/tasks", logRequest(mockHandler)).Methods(http.MethodPost)  // creates a task in the specified list

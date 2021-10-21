@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/mail"
+	"time"
 )
 
 func validateRegisterParams(p *UserJWTParams) error {
@@ -22,34 +23,39 @@ func validateRegisterParams(p *UserJWTParams) error {
   return nil
 }
 
-func (u *UserService) SignUpHandler(w http.ResponseWriter, r *http.Request) {
-  params := &UserJWTParams{}
-  if err := json.NewDecoder(r.Body).Decode(params); err != nil {
-    handleError(errors.New("could not read params"), w)
-    return
-  }
+func (u *UserService) WrappedSignUpHandler(todos *ToDo) func(w http.ResponseWriter, r *http.Request) {
+  return func(w http.ResponseWriter, r *http.Request) {
+    params := &UserJWTParams{}
+    if err := json.NewDecoder(r.Body).Decode(params); err != nil {
+      handleError(errors.New("could not read params"), w)
+      return
+    }
 
-  if err := validateRegisterParams(params); err != nil {
-    handleError(err, w)
-    return
-  }
+    if err := validateRegisterParams(params); err != nil {
+      handleError(err, w)
+      return
+    }
 
-  userCounter++
-  passwordDigest := md5.New().Sum([]byte(params.Password))
-  newUser := User{
-    Email: params.Email,
-    PasswordDigest: string(passwordDigest),
-    id: userCounter,
-  }
+    userCounter++
+    passwordDigest := md5.New().Sum([]byte(params.Password))
+    newUser := User{
+      Email: params.Email,
+      PasswordDigest: string(passwordDigest),
+      id: int(time.Now().Unix()),
+    }
 
-  if err := u.repository.Add(params.Email, newUser); err != nil {
-    userCounter--
-    handleError(err, w)
-    return
-  }
+    if err := u.repository.Add(params.Email, newUser); err != nil {
+      userCounter--
+      handleError(err, w)
+      return
+    }
 
-  w.WriteHeader(http.StatusCreated)
-  w.Write([]byte("registered"))
+    // TODO: 
+    todos.todos[newUser.id] = &UserToDo{lists: make(map[int]*ToDoList)}
+
+    w.WriteHeader(http.StatusCreated)
+    w.Write([]byte("registered"))
+  }
 }
 
 func (u *UserService) SignInHandler(w http.ResponseWriter, r *http.Request, jwtService *JWTService) {

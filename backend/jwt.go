@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/openware/rango/pkg/auth"
 )
@@ -29,6 +30,30 @@ func (j *JWTService) ParseJWT(jwt string) (auth.Auth, error) {
 func wrapJwt(jwt *JWTService, f func(http.ResponseWriter, *http.Request, *JWTService)) http.HandlerFunc {
   return func(rw http.ResponseWriter, r *http.Request) {
     f(rw, r, jwt)
+  }
+}
+
+type ProtectedHandler func(rw http.ResponseWriter, r *http.Request, u User, todolists *UserToDo)
+
+func (j *JWTService) jwtAuth(users UserRepository, todos *ToDo, h ProtectedHandler) http.HandlerFunc {
+  return func(rw http.ResponseWriter, r *http.Request) {
+    authHeader := r.Header.Get("Authorization")
+    token := strings.TrimPrefix(authHeader, "Bearer ")
+    auth, err := j.ParseJWT(token)
+    if err != nil {
+      rw.WriteHeader(401)
+      rw.Write([]byte("unauthorized"))
+      return
+    }
+
+    user, err := users.Get(auth.Email)
+    if err != nil {
+      rw.WriteHeader(401)
+      rw.Write([]byte("unauthorized"))
+      return
+    }
+
+    h(rw, r, user, todos.todos[user.id])
   }
 }
 

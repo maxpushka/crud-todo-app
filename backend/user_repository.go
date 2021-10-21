@@ -13,8 +13,8 @@ type InMemoryUserStorage struct {
 type UserRepository interface {
   Add(string, User) error
   Get(string) (User, error)
-  Update(string, User) error
-  Delete(string) (User, error)
+  //Update(string, User) error
+  //Delete(string) (User, error)
 }
 
 func NewInMemoryUserStorage() *InMemoryUserStorage {
@@ -49,9 +49,12 @@ func (us *InMemoryUserStorage) Get(email string) (User, error) {
   return user, nil
 }
 
-// TODO: Update should return error if there is no such user to update
+// TODO: InMemoryUserStorage.Update
+// Update should return error if there is no such user to update
 //func (us *InMemoryUserStorage) UpdateEmail(user User, newEmail string) error {}
+//func (us *InMemoryUserStorage) UpdatePassword(user User, newEmail string) error {}
 
-// TODO: Delete should return error if there is no such user to delete
-// TODO: Delete should return deleted user
+// TODO: InMemoryUserStorage.Delete
+// Delete should return error if there is no such user to delete
+// Delete should return deleted user
 //func (us *InMemoryUserStorage) Delete(string) (User, error) {}
