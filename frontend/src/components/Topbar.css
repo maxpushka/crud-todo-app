@@ -1,0 +1,9 @@
+#topbar-search {
+  background: url('../img/search.svg') no-repeat scroll 7px 7px;
+  background-color: #F9FAFB;
+  padding-left: 30px;
+  height: 2rem;
+  width: 402px;
+  border: 1px solid #E5E7EB;
+  box-sizing: border-box;
+}
