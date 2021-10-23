@@ -30,7 +30,7 @@ func GetTasksHandler(w http.ResponseWriter, r *http.Request, u User, todolists *
 	json.NewEncoder(w).Encode(list.tasks)
 }
 
-func createNewTask(user User, params CreateTaskParameters, list *ToDoList) int {
+func createNewTask(params CreateTaskParameters, list *ToDoList) int {
 	tasksCounter++
 	taskId := int(time.Now().Unix())
 	task := &Task{
@@ -67,13 +67,13 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request, u User, todolists
 		return
 	}
 
-	taskId := createNewTask(u, params, list)
+	taskId := createNewTask(params, list)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(strconv.Itoa(taskId)))
 }
 
-func UpdateTaskHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func UpdateTaskHandler(w http.ResponseWriter, r *http.Request, _ User, todolists *UserToDo) {
 	vars := mux.Vars(r)
 	listId, errList := strconv.Atoi(vars["list_id"])
 	if errList != nil {
@@ -114,7 +114,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request, u User, todolists
 	w.Write([]byte("updated"))
 }
 
-func DeleteTaskHandler(w http.ResponseWriter, r *http.Request, u User, todolists *UserToDo) {
+func DeleteTaskHandler(w http.ResponseWriter, r *http.Request, _ User, todolists *UserToDo) {
 	vars := mux.Vars(r)
 	listId, errList := strconv.Atoi(vars["list_id"])
 	if errList != nil {

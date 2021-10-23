@@ -1,15 +1,15 @@
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { AppCtx } from '../App';
+import { AppContext, GlobalContext } from '../App';
 
 type ProtectedRouteProps = {
   redirectTo: string;
 } & RouteProps;
 
 export default function ProtectedRoute({redirectTo, ...routeProps}: ProtectedRouteProps) {
-  const {jwtToken} = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext) as GlobalContext;
 
-  if (jwtToken !== "") {
+  if (appCtx.jwtToken !== "") {
     return <Route {...routeProps} />;
   }
   else {

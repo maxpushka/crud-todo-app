@@ -1,20 +1,28 @@
 import React from 'react';
 import renameList from '../../utils/lists/renameList';
 import RenameIcon from '../../img/rename.svg';
-import { AppCtx } from '../../App';
+import { AppContext } from '../../App';
 
 export type RenameModalProps = {
   setRenameModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function RenameModal({setRenameModalIsOpen}: RenameModalProps) {
-  const appCtx = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext);
+  if (appCtx === null) {
+    throw new Error('appCtx is null');
+  }
+
   const [newListName, setNewListName] = React.useState<string>('New name');
 
-  const handleNewNameInput = (event) => setNewListName(event.target.value);
+  const handleNewNameInput = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+    setNewListName(event.target.value);
+  }
 
   function dispatchRename() {
-    renameList({appCtx, newName: newListName}).then(() => setRenameModalIsOpen(false));
+    if (appCtx !== null) {
+      renameList({appCtx, newName: newListName}).then(() => setRenameModalIsOpen(false));
+    }
   }
 
   return (

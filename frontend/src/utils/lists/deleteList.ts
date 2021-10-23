@@ -9,9 +9,7 @@ type DeleteListProps = {
 export default async function deleteList({appCtx, listId}: DeleteListProps) {
   const response = await fetch(`/todo/lists/${listId}`, {
     method: 'DELETE',
-    headers: new Headers({
-      'Authorization': `Bearer ${appCtx.jwtToken}`
-    })
+    headers: new Headers({'Authorization': `Bearer ${appCtx.jwtToken}`})
   }).then(data => data.text());
 
   switch (response) {

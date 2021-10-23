@@ -1,12 +1,15 @@
 import React from "react";
 import "./ProfileModal.css";
-import { AppCtx } from "../../App";
+import { AppContext } from "../../App";
 import OpenwareLogoSmall from '../../img/logo-openware-small.svg';
 import UserAvatar from '../../img/user-avatar.png';
 import userLogout from "../../utils/userLogout";
 
 export default function ProfileModal({style={}}) {
-  const appCtx = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext);
+  if (appCtx === null) {
+    throw new Error('appCtx is null');
+  }
 
   return (
     <div id={'profile-modal'} style={style}>

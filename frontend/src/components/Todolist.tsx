@@ -1,5 +1,5 @@
 import React from "react";
-import { AppCtx, GlobalContext } from "../App";
+import { AppContext, GlobalContext, TaskEntry } from "../App";
 import './Todolist.css';
 import PlusSign from '../img/plus.svg';
 import getTasks from "../utils/tasks/getTasks";
@@ -21,39 +21,46 @@ export function changeTaskStatus(appCtx: GlobalContext, taskId: string | number)
 }
 
 export default function Todolist() {
-  const appCtx = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext);
+  if (appCtx === null) {
+    throw new Error('appCtx is null');
+  }
 
   const [taskEditModalIsOpen, setTaskEditModalIsOpen] = React.useState<boolean>(false);
   const [listOptionsModalIsOpen, setListOptionsModalIsOpen] = React.useState<boolean>(false);
   const [renameModalIsOpen, setRenameModalIsOpen] = React.useState<boolean>(false);
 
-  const [taskComponents, setTaskComponents] = React.useState([]);
+  const [taskComponents, setTaskComponents] = React.useState<JSX.Element[]>([]);
 
   React.useEffect(() => {
+    setTaskEditModalIsOpen(false);
     getTasks(appCtx);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appCtx.selectedListId]);
 
   React.useEffect(() => {
-    const arr = [];
+    const newListButton = (key: React.Key, task: TaskEntry) => {
+      const ctx = appCtx as GlobalContext;
+      return (
+        <div key={key} onClick={() => {ctx.setSelectedTaskId(task.id); setTaskEditModalIsOpen(true)}}>
+          <input type="checkbox" name="task status" className={'mr-7'}
+            checked={task.isCompleted} onChange={(event) => {changeTaskStatus(ctx, task.id as string | number)}}
+          />
+          <span className={task.isCompleted ? 'line-through' : ''}>
+            {task.name}
+          </span>
+        </div>
+      )
+    }
+
+    const arr: JSX.Element[] = [];
     let key = 0;
     for (let [, taskEntry] of Object.entries(appCtx.tasksObj)) {
       arr.push(newListButton(key++, taskEntry));
     }
     setTaskComponents(arr);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appCtx.tasksObj]);
-
-  function newListButton(key, task) {
-    return (
-      <div key={key} onClick={() => {appCtx.setSelectedTaskId(task.id); setTaskEditModalIsOpen(true)}}>
-        <input type="checkbox" name="task status" className={'mr-7'}
-          checked={task.isCompleted} onChange={(event) => {changeTaskStatus(appCtx, task.id)}}
-        />
-        <span className={task.isCompleted ? 'line-through' : ''}>
-          {task.name}
-        </span>
-      </div>
-    )
-  }
 
   return (
     <>

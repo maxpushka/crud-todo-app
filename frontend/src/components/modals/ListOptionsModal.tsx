@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppCtx } from '../../App';
+import { AppContext } from '../../App';
 import RedTrashIcon from '../../img/red-trash.svg';
 import RenameIcon from '../../img/rename.svg';
 import deleteList from '../../utils/lists/deleteList';
@@ -10,7 +10,7 @@ type ListOptionsModalProps = {
 }
 
 export default function ListOptionsModal({ setListOptionsModalIsOpen, setRenameModalIsOpen }: ListOptionsModalProps) {
-  const appCtx = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext);
 
   function handleRename() {
     setListOptionsModalIsOpen(false); 
@@ -18,7 +18,9 @@ export default function ListOptionsModal({ setListOptionsModalIsOpen, setRenameM
   }
 
   function handleDelete() {
-    deleteList({appCtx, listId: appCtx.selectedListId}).then(() => setListOptionsModalIsOpen(false));
+    if (appCtx !== null) {
+      deleteList({appCtx, listId: appCtx.selectedListId}).then(() => setListOptionsModalIsOpen(false));
+    }
   }
 
   return (

@@ -1,17 +1,8 @@
 # Hackademy ToDo project
 
-## Run backend:
+To start the app execute the following code:
 
 ```bash
-ssh-keygen -t rsa -f $PWD/backend/jwt_key
-go run backend
-```
-
-## Run fontend
-
-```bash
-cd frontend
-npm install
-npm run start
+make run
 ```
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppCtx, GlobalContext } from '../App';
+import { AppContext, GlobalContext } from '../App';
 import "./AuthForm.css";
 import OpenwareLogoSmall from '../img/logo-openware-small.svg';
 
@@ -10,18 +10,18 @@ export enum Pages {
 }
 
 export default function AuthForm() {
-  const [card, setCard] = React.useState<Pages>(Pages.Signup);
-  const appctx = React.useContext(AppCtx);
+  const [card, setCard] = React.useState<Pages>(Pages.Signin);
+  const appCtx = React.useContext(AppContext);
 
   function getCard() {
     switch (card) {
       case Pages.Signup:
-        return <SignUpCard setCard={setCard} appCtx={appctx} />
+        return <SignUpCard setCard={setCard} appCtx={appCtx} />
       case Pages.Registered:
-        return <SingInCard setCard={setCard} appCtx={appctx} reg={true} />
+        return <SingInCard setCard={setCard} appCtx={appCtx} reg={true} />
       case Pages.Signin:
       default:
-        return <SingInCard setCard={setCard} appCtx={appctx} reg={false}/>
+        return <SingInCard setCard={setCard} appCtx={appCtx} reg={false}/>
     }
   }
 
@@ -35,16 +35,16 @@ export default function AuthForm() {
 }
 
 export type CardProps = {
-  setCard?: React.Dispatch<React.SetStateAction<Pages>>, 
-  appCtx?: GlobalContext | undefined | null, 
+  setCard: React.Dispatch<React.SetStateAction<Pages>>, 
+  appCtx: GlobalContext | undefined | null,
   reg?: boolean
 }
 
 function SingInCard({setCard, appCtx, reg}: CardProps) {
   const [noAccount, setNoAccount] = React.useState(false);
   const [invalidPassword, setInvalidPassword] = React.useState(false);
-  const emailRef = React.useRef<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>>(null);
-  const passRef = React.useRef<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>>(null);
+  const emailRef = React.createRef<HTMLInputElement>();
+  const passRef = React.createRef<HTMLInputElement>();
 
   async function dispatchSignin() {
     const email = emailRef.current?.value || '';
@@ -105,15 +105,15 @@ function SingInCard({setCard, appCtx, reg}: CardProps) {
 }
 
 function SignUpCard({setCard, appCtx}: CardProps) {
-  const emailRef = React.useRef<React.InputHTMLAttributes<HTMLInputElement | null>>(null);
-  const passRef = React.useRef<React.InputHTMLAttributes<HTMLInputElement | null>>(null);
+  const emailRef = React.createRef<HTMLInputElement>();
+  const passRef = React.createRef<HTMLInputElement>();
   const confirmPassRef = React.useRef(null);
 
   const [alreadyRegistered, setAlreadyRegistered] = React.useState(false);
 
   async function dispatchSignup() {
-    const email = emailRef.current.value;
-    const password = passRef.current.value;
+    const email = emailRef.current?.value;
+    const password = passRef.current?.value;
 
     const response = await fetch('/user/signup', {
       method: 'POST',

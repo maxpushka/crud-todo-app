@@ -10,9 +10,7 @@ type CreateListProps = {
 export default async function renameList({appCtx, newName}: CreateListProps) {
   const response = await fetch(`/todo/lists/${appCtx.selectedListId}`, {
     method: 'PUT',
-    headers: new Headers({
-      'Authorization': `Bearer ${appCtx.jwtToken}`
-    }),
+    headers: new Headers({'Authorization': `Bearer ${appCtx.jwtToken}`}),
     body: JSON.stringify({'name': newName})
   }).then(data => data.text());
 

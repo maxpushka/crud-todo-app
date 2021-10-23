@@ -7,13 +7,14 @@ import Topbar from './components/Topbar';
 import Todolist from './components/Todolist';
 import './App.css';
 
-export const AppCtx = React.createContext<GlobalContext|null>(null);
+export const AppContext = React.createContext<GlobalContext | null>(null);
 
-export type List = {
+export type ListEntry = {
+  id?: string | number,
   name: string,
 }
 
-export type Task = {
+export type TaskEntry = {
   id: string | number | null,
   name: string,
   description: string,
@@ -21,15 +22,18 @@ export type Task = {
   createdOn: Date
 }
 
+export type TasksObjType = { [key: string]: TaskEntry; };
+export type ListsObjType = { [key: string]: ListEntry; };
+
 export type GlobalContext = {
-  jwtToken: string | null, 
+  jwtToken: string | null,
   setJwtToken: React.Dispatch<React.SetStateAction<string | null>>, 
   userEmail: string | null,
   setUserEmail: React.Dispatch<React.SetStateAction<string | null>>, 
-  listsObj: object | null, 
-  setListsObj: React.Dispatch<React.SetStateAction<object | null>>,
-  tasksObj: object | null, 
-  setTasksObj: React.Dispatch<React.SetStateAction<object | null>>,
+  listsObj: ListsObjType,
+  setListsObj: React.Dispatch<React.SetStateAction<ListsObjType>>,
+  tasksObj: TasksObjType, 
+  setTasksObj: React.Dispatch<React.SetStateAction<TasksObjType>>,
   selectedListId: string | number | null, 
   setSelectedListId: React.Dispatch<React.SetStateAction<string | number | null>>,
   selectedTaskId: string | number | null, 
@@ -43,8 +47,17 @@ export default function App() {
   const [selectedListId, setSelectedListId] = React.useState<string | number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | number | null>(null);
 
-  const [listsObj, setListsObj] = React.useState<object | null>({});
-  const [tasksObj, setTasksObj] = React.useState<object | null>({});
+  const [listsObj, setListsObj] = React.useState<ListsObjType>({});
+  const [tasksObj, setTasksObj] = React.useState<TasksObjType>({});
+
+  const initialState: GlobalContext = { 
+    jwtToken, setJwtToken, 
+    userEmail, setUserEmail, 
+    listsObj, setListsObj,
+    tasksObj, setTasksObj,
+    selectedListId, setSelectedListId,
+    selectedTaskId, setSelectedTaskId,
+  };
 
   React.useEffect(() => {
     console.log('received new jwt', jwtToken);
@@ -59,14 +72,7 @@ export default function App() {
   }, [selectedTaskId]);
 
   return (
-    <AppCtx.Provider value={{ 
-          jwtToken, setJwtToken, 
-          userEmail, setUserEmail, 
-          listsObj, setListsObj,
-          tasksObj, setTasksObj,
-          selectedListId, setSelectedListId,
-          selectedTaskId, setSelectedTaskId,
-        }}>
+    <AppContext.Provider value={initialState}>
       <Switch>
         <Route path={'/login'}>
           {jwtToken !== "" ? <Redirect to='/' /> : null}
@@ -82,6 +88,6 @@ export default function App() {
           </div>
         </ProtectedRoute>
       </Switch>
-    </AppCtx.Provider>
+    </AppContext.Provider>
   );
 }

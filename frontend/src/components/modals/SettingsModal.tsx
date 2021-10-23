@@ -2,10 +2,13 @@ import React from "react";
 import userLogout from "../../utils/userLogout";
 import Profile from '../../img/profile.svg';
 import Logout from '../../img/log-out.svg';
-import { AppCtx } from "../../App";
+import { AppContext } from "../../App";
 
 export default function SettingsModal() {
-  const appCtx = React.useContext(AppCtx);
+  const appCtx = React.useContext(AppContext);
+  if (appCtx === null) {
+    throw new Error('appCtx is null');
+  }
 
   return (
     <div id={'sidebar-modal'} className={'bg-white flex flex-col items-center'}>

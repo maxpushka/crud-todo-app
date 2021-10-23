@@ -9,9 +9,7 @@ export type CreateListProps = {
 export default async function createList({appCtx, listName}: CreateListProps) {
   const newListId = await fetch('/todo/lists', {
     method: 'POST',
-    headers: new Headers({
-      'Authorization': `Bearer ${appCtx.jwtToken}`
-    }),
+    headers: new Headers({'Authorization': `Bearer ${appCtx.jwtToken}`}),
     body: JSON.stringify({name: listName})
   }).then(data => data.text());
 
