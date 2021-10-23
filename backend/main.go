@@ -11,12 +11,6 @@ import (
   "github.com/gorilla/mux"
 )
 
-func mockHandler(w http.ResponseWriter, r *http.Request) {
-  log.Println("mock handler")
-  w.WriteHeader(http.StatusOK)
-  w.Write([]byte("mock handler"))
-}
-
 func main() {
   r := mux.NewRouter()
 
