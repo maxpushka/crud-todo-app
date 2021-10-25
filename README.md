@@ -1,8 +1,13 @@
 # Hackademy ToDo project
 
-To start the app execute the following code:
+To run the ***backend*** execute:
 
 ```bash
-make run
+make backend
 ```
 
+To run the ***frontend*** execute:
+
+```bash
+make frontend
+```
