@@ -1,4 +1,4 @@
-# Hackademy ToDo project
+# CRUD ToDo project
 
 To run the ***backend*** execute:
 
